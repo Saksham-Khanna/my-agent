@@ -1,4 +1,4 @@
-# Spectra — Local Desktop AI Agent (Phase 3)
+# Spectra — Local Desktop AI Agent
 
 A local-first, multimodal desktop AI agent. **This repository currently reflects the completion of Phases 0 through 3**, establishing the foundation, local LLM integration, backend Orb state machine, and task routing architecture.
 
