@@ -1,0 +1,51 @@
+.dev-simulator {
+  position: fixed;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  max-width: 260px;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 180, 84, 0.08),
+    rgba(255, 180, 84, 0.08) 6px,
+    rgba(255, 180, 84, 0.03) 6px,
+    rgba(255, 180, 84, 0.03) 12px
+  );
+  border: 1px dashed rgba(255, 180, 84, 0.5);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  z-index: 40;
+}
+
+.dev-simulator__badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--state-warning);
+  margin-bottom: var(--space-2);
+}
+
+.dev-simulator__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.dev-simulator__btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 7px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.dev-simulator__btn:hover {
+  color: var(--text-primary);
+}
+
+.dev-simulator__btn--active {
+  border-color: var(--state-warning);
+  color: var(--state-warning);
+}

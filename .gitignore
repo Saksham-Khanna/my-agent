@@ -1,0 +1,63 @@
+# ============================================================
+# Spectra — root .gitignore
+# ============================================================
+
+# ---- Node / Frontend ----
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+.turbo/
+
+# ---- Python / Backend ----
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Tauri / Rust ----
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/
+Cargo.lock
+
+# ---- SQLite / local data (never commit runtime data) ----
+*.db
+*.sqlite
+*.sqlite3
+data/
+apps/api/*.db
+
+# ---- AI models (explicitly never committed) ----
+*.gguf
+*.bin
+*.onnx
+*.safetensors
+models/
+.ollama/
+
+# ---- Env / secrets ----
+.env
+.env.local
+.env.*.local
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Editor / OS ----
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Antigravity / misc AI agent scratch ----
+.antigravity/

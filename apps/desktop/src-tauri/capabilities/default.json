@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Phase 0 capability set — window lifecycle only. No filesystem, shell, or process permissions are granted. Add capabilities only when a phase's engineering justifies them (see docs/ENGINEERING_RULES.md).",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

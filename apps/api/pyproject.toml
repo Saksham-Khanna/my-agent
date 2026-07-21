@@ -1,0 +1,43 @@
+[project]
+name = "spectra-api"
+version = "0.1.0"
+description = "Spectra backend — Phase 0 foundation. Health + WebSocket handshake only."
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "MIT" }
+
+# ------------------------------------------------------------------
+# Phase 0 dependencies ONLY.
+# Do NOT add LLM / vision / audio / vector-db dependencies here.
+# Those belong to later phases and must be added with justification
+# in docs/DECISIONS.md when that phase actually begins.
+# ------------------------------------------------------------------
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.32,<1.0",
+    "pydantic>=2.9,<3.0",
+    "pydantic-settings>=2.5,<3.0",
+    "websockets>=13.1,<14.0",
+    "httpx>=0.27,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "ruff>=0.7,<1.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
