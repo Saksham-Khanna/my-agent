@@ -39,6 +39,20 @@ def test_orb_state_machine_no_op_transition():
     assert event.current_state == OrbState.IDLE
     assert event.reason == "sync"
 
+def test_orb_state_machine_thinking_to_executing_to_idle():
+    # Actions handler flow: IDLE -> THINKING -> EXECUTING -> IDLE
+    machine = OrbStateMachine(initial_state=OrbState.IDLE)
+
+    machine.transition_to(OrbState.THINKING, reason="actions_handler_start")
+    assert machine.current_state == OrbState.THINKING
+
+    event = machine.transition_to(OrbState.EXECUTING, reason="executing_system_info")
+    assert event.current_state == OrbState.EXECUTING
+    assert machine.current_state == OrbState.EXECUTING
+
+    machine.transition_to(OrbState.IDLE, reason="tool_execution_finished")
+    assert machine.current_state == OrbState.IDLE
+
 def test_orb_state_event_model():
     # Test valid model instantiation
     event = OrbStateEvent(

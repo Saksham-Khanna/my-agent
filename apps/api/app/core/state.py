@@ -27,7 +27,7 @@ VALID_TRANSITIONS = {
     OrbState.IDLE: {OrbState.LISTENING, OrbState.THINKING, OrbState.VISION, OrbState.EXECUTING, OrbState.ERROR},
     OrbState.LISTENING: {OrbState.TRANSCRIBING, OrbState.ERROR, OrbState.INTERRUPTED, OrbState.IDLE},
     OrbState.TRANSCRIBING: {OrbState.THINKING, OrbState.ERROR, OrbState.INTERRUPTED, OrbState.IDLE},
-    OrbState.THINKING: {OrbState.RESPONDING, OrbState.ERROR, OrbState.INTERRUPTED},
+    OrbState.THINKING: {OrbState.RESPONDING, OrbState.EXECUTING, OrbState.ERROR, OrbState.INTERRUPTED},
     OrbState.RESPONDING: {OrbState.IDLE, OrbState.ERROR, OrbState.INTERRUPTED},
     OrbState.VISION: {OrbState.THINKING, OrbState.ERROR, OrbState.INTERRUPTED},
     OrbState.EXECUTING: {OrbState.IDLE, OrbState.ERROR, OrbState.INTERRUPTED},

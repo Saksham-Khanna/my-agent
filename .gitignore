@@ -9,6 +9,9 @@ dist-ssr/
 .vite/
 *.local
 .turbo/
+test-results/
+playwright-report/
+blob-report/
 
 # ---- Python / Backend ----
 __pycache__/

@@ -32,7 +32,7 @@ jobs:
         run: pytest
 
   frontend:
-    name: Frontend (lint + typecheck + build)
+    name: Frontend (lint + typecheck + test + build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -55,5 +55,46 @@ jobs:
       - name: Typecheck (tsc)
         run: npm run typecheck
 
+      - name: Unit tests (vitest)
+        run: npm run test
+
       - name: Build (vite)
         run: npm run build
+
+  e2e:
+    name: Frontend e2e (Playwright vs real backend)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/pyproject.toml
+
+      - name: Install backend dependencies
+        working-directory: apps/api
+        run: pip install -e ".[dev]"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: apps/desktop
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: apps/desktop
+        run: npx playwright install --with-deps chromium
+
+      - name: Build frontend (vite)
+        working-directory: apps/desktop
+        run: npm run build
+
+      - name: Run e2e tests (Playwright)
+        working-directory: apps/desktop
+        run: npm run test:e2e
