@@ -15,6 +15,34 @@ class OllamaProvider(LLMProvider):
     def __init__(self, base_url: str = None, model: str = None):
         self.base_url = base_url or settings.ollama_base_url
         self.model = model or settings.ollama_model
+        self._loaded = False
+
+    async def _post_keep_alive(self, keep_alive: str) -> None:
+        """Send a minimal generation request to pin or release the model."""
+        url = f"{self.base_url}/api/generate"
+        payload = {"model": self.model, "prompt": "", "stream": False, "keep_alive": keep_alive}
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload, timeout=60.0)
+            response.raise_for_status()
+
+    async def load(self) -> None:
+        """Pin the model into memory (keep alive until explicitly unloaded)."""
+        if self._loaded:
+            return
+        await self._post_keep_alive("-1")
+        self._loaded = True
+
+    async def unload(self) -> None:
+        """Release the model from memory immediately."""
+        if not self._loaded:
+            return
+        try:
+            await self._post_keep_alive("0")
+        finally:
+            self._loaded = False
+
+    def is_loaded(self) -> bool:
+        return self._loaded
 
     async def generate_stream(self, prompt: str) -> AsyncGenerator[str, None]:
         """
@@ -43,7 +71,8 @@ class OllamaProvider(LLMProvider):
                         except json.JSONDecodeError:
                             # Skip malformed lines
                             continue
-            except httpx.RequestError as e:
+            except httpx.HTTPError as e:
+                # Catch both RequestError (connection issues) and HTTPStatusError (404s, 500s)
                 # In a real app we'd want custom exceptions, but yielding an error string
                 # or raising a standard exception works for Phase 1.
                 raise RuntimeError(f"Error communicating with Ollama: {e}")

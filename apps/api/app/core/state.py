@@ -25,8 +25,8 @@ class OrbStateEvent(BaseModel):
 # Define legal transitions from a given state to a set of valid next states.
 VALID_TRANSITIONS = {
     OrbState.IDLE: {OrbState.LISTENING, OrbState.THINKING, OrbState.VISION, OrbState.EXECUTING, OrbState.ERROR},
-    OrbState.LISTENING: {OrbState.TRANSCRIBING, OrbState.ERROR, OrbState.INTERRUPTED},
-    OrbState.TRANSCRIBING: {OrbState.THINKING, OrbState.ERROR, OrbState.INTERRUPTED},
+    OrbState.LISTENING: {OrbState.TRANSCRIBING, OrbState.ERROR, OrbState.INTERRUPTED, OrbState.IDLE},
+    OrbState.TRANSCRIBING: {OrbState.THINKING, OrbState.ERROR, OrbState.INTERRUPTED, OrbState.IDLE},
     OrbState.THINKING: {OrbState.RESPONDING, OrbState.ERROR, OrbState.INTERRUPTED},
     OrbState.RESPONDING: {OrbState.IDLE, OrbState.ERROR, OrbState.INTERRUPTED},
     OrbState.VISION: {OrbState.THINKING, OrbState.ERROR, OrbState.INTERRUPTED},

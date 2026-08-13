@@ -1,16 +1,14 @@
 """
-Spectra API — Phase 0 entrypoint.
+Spectra API — application entrypoint.
 
 Run with:
     uvicorn app.main:app --reload --port 8000
 
-Scope (Phase 0 only):
-    - GET /health
-    - WS   /ws        (connection handshake + ping/pong)
+Endpoints:
+    - GET  /health    Health check
+    - WS   /ws        Agent communication (state, tasks, streaming)
 
-Explicitly out of scope for this phase: LLM integration, Ollama, Whisper,
-vision models, RAG, embeddings, vector databases, memory, tool execution,
-LangGraph, GPU scheduling. See docs/DEVELOPMENT_PHASES.md.
+See docs/DEVELOPMENT_PHASES.md for the full build history.
 """
 
 from __future__ import annotations
@@ -24,7 +22,7 @@ from app.routes import health, ws
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="Local-first desktop AI agent — Phase 0 foundation backend.",
+    description="Spectra — local-first desktop AI agent backend.",
 )
 
 app.add_middleware(
@@ -48,3 +46,4 @@ async def root() -> dict:
         "health": "/health",
         "websocket": "/ws",
     }
+

@@ -1,10 +1,9 @@
 """
 Application configuration for the Spectra backend.
 
-Phase 0 scope: only the settings needed to run a health endpoint and a
-WebSocket handshake. Do not add model paths, GPU settings, or provider
-API keys here until the phase that actually needs them (see
-docs/DEVELOPMENT_PHASES.md).
+All phases are implemented — settings cover LLM, STT, vision, file
+intelligence, memory, and GPU-aware scheduling. See docs/DECISIONS.md
+for each configuration choice.
 """
 
 from __future__ import annotations
@@ -21,11 +20,11 @@ class Settings(BaseSettings):
 
     # Identity
     app_name: str = "Spectra API"
-    app_version: str = "0.1.0"
+    app_version: str = "1.0.0"
     environment: str = "development"
 
     # Network
-    # 127.0.0.1 only — Phase 0 has no reason to bind 0.0.0.0.
+    # 127.0.0.1 only â€” Phase 0 has no reason to bind 0.0.0.0.
     host: str = "127.0.0.1"
     port: int = 8000
 
@@ -36,16 +35,42 @@ class Settings(BaseSettings):
         "tauri://localhost",
     ]
 
-    # Resource posture (informational only in Phase 0 — no model runs yet).
-    # Values are placeholders that future phases (see Phase 9, GPU-aware
-    # scheduler) will read to decide how much work the agent may do.
+    # Resource posture. Read by the Phase 9 GPU-aware scheduler to decide
+    # which models may stay loaded and when to unload them.
     power_profile: str = "BALANCED"  # ECO | BALANCED | PERFORMANCE
     max_vram_budget_gb: float = 4.5
     max_ram_budget_gb: float = 10.0
 
+    # Phase 9: per-profile VRAM budgets (GB) and idle-unload timeouts (s).
+    eco_vram_budget_gb: float = 2.5
+    balanced_vram_budget_gb: float = 4.0
+    performance_vram_budget_gb: float = 4.5
+    eco_idle_unload_seconds: int = 30
+    balanced_idle_unload_seconds: int = 120
+    performance_idle_unload_seconds: int = 600
+
+    # Phase 9: enforce the RAM budget in addition to VRAM. Off by default;
+    # the scheduler always tracks and reports RAM, but only evicts for RAM
+    # pressure when this is enabled.
+    enable_ram_budget_enforcement: bool = False
+
     # Phase 1: Local LLM Configuration
     ollama_base_url: str = "http://127.0.0.1:11434"
-    ollama_model: str = "qwen3:4b"
+    ollama_model: str = "qwen2.5:3b"
+
+    # Phase 4: Local STT Configuration
+    stt_model: str = "tiny.en"
+
+    # Phase 5: Local Vision Configuration
+    vision_model: str = "moondream"
+
+    # Phase 6: File Intelligence Configuration
+    sqlite_db_path: str = "spectra_files.db"
+    index_target_dir: str = "docs"
+
+    # Phase 8: Memory Configuration
+    memory_db_path: str = "spectra_memory.db"
 
 
 settings = Settings()
+

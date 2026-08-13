@@ -1,23 +1,41 @@
-from typing import AsyncGenerator, Any
+﻿from typing import AsyncGenerator, Any, Optional
 
 from app.core.models import TaskContext, TaskResult
-from app.core.handlers import BaseHandler, TalkHandler, StubHandler
+from app.core.handlers import TalkHandler, VisionHandler, FilesHandler, ActionsHandler, ScreenHandler, MemoryHandler
 from app.core.state import OrbStateEvent
+from app.core.memory_policy import RetrievalPolicy, DefaultRetrievalPolicy
+from app.services.memory_service import MemoryService
+
 
 class TaskRouter:
-    def __init__(self):
+    def __init__(self, memory_service: Optional[MemoryService] = None, memory_policy: Optional[RetrievalPolicy] = None, scheduler=None):
+        self.memory_service = memory_service
+        self.memory_policy = memory_policy or DefaultRetrievalPolicy()
+        talk_handler = TalkHandler(scheduler=scheduler)
+        vision_handler = VisionHandler(scheduler=scheduler)
         self.handlers = {
-            "talk": TalkHandler(),
-            "vision": StubHandler(mode_name="vision", required_phase=5),
-            "screen": StubHandler(mode_name="screen", required_phase=6),  # or whatever phase screen is
-            "files": StubHandler(mode_name="files", required_phase=6),
-            "memory": StubHandler(mode_name="memory", required_phase=8),
-            "actions": StubHandler(mode_name="actions", required_phase=7),
+            "talk": talk_handler,
+            "vision": vision_handler,
+            "files": FilesHandler(talk_handler=talk_handler),
+            "actions": ActionsHandler(talk_handler=talk_handler),
+            "screen": ScreenHandler(vision_handler=vision_handler),
+            "memory": MemoryHandler(memory_service=self.memory_service, talk_handler=talk_handler),
         }
 
     async def dispatch(self, ctx: TaskContext) -> AsyncGenerator[Any, None]:
+        # 0. Memory retrieval (pre-handler)
+        decision = await self.memory_policy.decide(ctx.mode, ctx.text, ctx.attachments)
+        memory_context = ""
+        if decision.should_query and self.memory_service:
+            memory_context = await self.memory_service.get_memory_context(
+                query=decision.query_text,
+                max_tokens=1500
+            )
+        if memory_context:
+            ctx.text = f"{memory_context}\n\nUser Request: {ctx.text}"
+
         handler = self.handlers.get(ctx.mode)
-        
+
         # 1. Emit task.started
         yield ("task.started", {
             "task_id": ctx.task_id,
@@ -36,10 +54,8 @@ class TaskRouter:
         try:
             async for event in handler.handle(ctx):
                 if isinstance(event, OrbStateEvent):
-                    # Passthrough state events
                     yield event
                 elif isinstance(event, TaskResult):
-                    # 3. Finalize task
                     if event.status == "success":
                         yield ("task.completed", {
                             "task_id": ctx.task_id,
@@ -52,10 +68,7 @@ class TaskRouter:
                             "status": event.status
                         })
                 elif isinstance(event, tuple):
-                    # Passthrough specific events (e.g. llm.token)
                     yield event
-                    
-                    # Optionally emit task.progress when receiving tokens
                     if event[0] == "llm.token":
                         yield ("task.progress", {
                             "task_id": ctx.task_id,
