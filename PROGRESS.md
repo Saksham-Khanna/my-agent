@@ -2,10 +2,10 @@
 - [x] **Phase 1 — Local LLM streaming**
 - [x] **Phase 2 — Agent event/state system**
 - [x] **Phase 3 — Task router**
-⬜ Phase 4 – Voice
-⬜ Phase 5 – Vision
-⬜ Phase 6 – File Intelligence
-⬜ Phase 7 – Tool Execution
-⬜ Phase 8 – Memory
-⬜ Phase 9 – GPU Scheduler
-⬜ Phase 10 – Polish
+- [x] **Phase 4 — Voice**
+- [x] **Phase 5 — Vision**
+- [x] **Phase 6 — File Intelligence**
+- [x] **Phase 7 — Tool Execution**
+- [x] **Phase 8 — Screen + Memory**
+- [x] **Phase 9 — GPU Scheduler**
+- [x] **Phase 10 — Benchmarking, reliability, and polish**

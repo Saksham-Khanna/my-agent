@@ -243,19 +243,22 @@ anything not on the explicit allow-list.
 
 ## Phase 8 — Memory
 
-**Goal:** Long-term contextual memory that persists across sessions,
-stored locally.
+**Goal:** Screen understanding via getDisplayMedia capture (reusing Phase 5 Vision pipeline), plus long-term contextual memory that persists across sessions.
 
 **Deliverables:** SQLite-backed memory store; retrieval integrated into
 the Phase 3 router so relevant past context can inform responses;
 `memory.updated` events; a user-facing way to view/clear stored memory
 (privacy-respecting by construction).
 
-**Acceptance criteria:** information provided in one session is
-correctly recalled in a later session; the user can clear memory and
-verify it is gone.
+**Acceptance criteria:**
+- Screen mode submit captures screen ScreenHandler delegates to VisionHandler returns AI description.
+- Remember that my favorite color is blue in Memory mode stored in SQLite persists across restart memory.updated event.
+- What do you know about me in Talk mode MemoryMiddleware queries relevant memories injected as context.
+- Actions mode never queries memory. Short/empty queries skip memory.
+- Clear all memories confirmed cleared memory.updated event.
+- Both StubHandler entries in router.py replaced with real handlers.
 
-**Tests:** store/retrieve unit tests; a clear-memory test.
+**Tests:** MemoryStore CRUD tests; MemoryService tests (remember/recall/forget/get_memory_context with mock store); RetrievalPolicy tests per condition; ScreenHandler/MemoryHandler tests; router memory injection tests.
 
 **Dependencies:** Phases 0–3, Phase 6 (shares SQLite infrastructure).
 

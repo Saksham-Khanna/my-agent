@@ -32,10 +32,11 @@ followed by `ARCHITECTURE.md` and `DEVELOPMENT_PHASES.md`.
 | 5 | Memory | Long-term contextual memory |
 | 6 | Actions | Safe desktop/system tool execution |
 
-These are represented in the UI from Phase 0 onward (as inert mode
-buttons — see `UI_SPEC.md`), but **none of them are implemented until
-their respective phase**. See `DEVELOPMENT_PHASES.md` for exactly which
-phase implements which capability.
+These are represented in the UI from Phase 0 onward as inert mode
+buttons (see `UI_SPEC.md`), and **each is implemented only in its
+respective phase** — as of Phase 8, all six capabilities are
+implemented. See `DEVELOPMENT_PHASES.md` for exactly which phase
+implements which capability.
 
 ## Target hardware and resource posture
 

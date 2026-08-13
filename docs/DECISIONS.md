@@ -85,8 +85,9 @@ speculatively — see `ENGINEERING_RULES.md` and Phase 8's "explicitly out
 of scope" note; it would only be introduced later with a recorded
 justification here if SQLite's retrieval quality proves insufficient.
 
-**Status:** SQLite is not yet used by any code in this repository as of
-Phase 0 — this ADR records the decision made for future phases.
+**Status:** In use since Phase 6 (SQLite-backed local file index) and
+Phase 8 (SQLite-backed memory store). This ADR recorded the decision
+before either existed.
 
 ---
 
@@ -133,3 +134,85 @@ nothing at runtime in a production build (it self-disables via
 **Decision:** The core technology stack (Tauri, React, Vite, TypeScript for the frontend; FastAPI, Python, Uvicorn for the backend) is now locked for all future development phases leading up to the final version of the application.
 
 **Why:** To ensure stability and prevent scope creep or unnecessary rewrites. The current stack provides the necessary native desktop capabilities (Tauri), UI framework (React), and AI/ML backend environment (Python) required to fulfill the `MASTER_BLUEPRINT.md`. No further migrations or stack replacements shall be made.
+
+---
+
+## ADR-010: Phase 4 Voice Architecture — MediaRecorder and faster-whisper
+
+**Decision:** The frontend uses `MediaRecorder` to capture audio to a single WebM Blob which is uploaded via WebSocket as Base64 when recording stops. The backend decodes this in-memory using PyAV (bundled with `faster-whisper`) and transcribes using the `faster-whisper` model (`tiny.en`) running on CPU.
+
+**Why:** This approach achieves extreme simplicity by avoiding real-time chunk streaming, complicated buffer management, and complex AudioWorklets. `MediaRecorder` is native and robust. `faster-whisper` is lightweight and PyAV allows us to decode WebM without requiring Windows users to install FFmpeg natively.
+
+---
+
+## ADR-011: Phase 5 Vision Architecture — TaskRouter-Integrated VisionHandler and Ollama moondream
+
+**Decision:** Vision tasks are integrated directly into the `TaskRouter` via a dedicated `VisionHandler` rather than creating a parallel transport path in `ws.py`. The frontend submits a standard `task.request` with `mode="vision"` and optional `image_b64`. The `VisionHandler` transitions the Orb to `VISION`, invokes `VisionProvider` (`moondream` via Ollama) to extract a dense text description, augments the prompt, and delegates directly to `TalkHandler`.
+
+**Why:** This preserves the handler architecture established in Phase 3, keeping `ws.py` strictly as a transport layer. Utilizing `moondream` (a tiny 1.8B VLM) as an image-to-text pre-processor guarantees zero VRAM overload on 6GB cards while maintaining high image comprehension quality.
+
+---
+
+## ADR-012: Phase 8 Memory Retrieval — SQLite keyword search, no embeddings
+
+**Decision:** Phase 8 long-term memory uses a plain SQLite `LIKE`-based
+keyword retrieval (via `MemoryStore.search`) plus a `RetrievalPolicy`
+that decides when memory should be queried at all. No embeddings and no
+vector database are introduced.
+
+**Why:** Per Phase 8's "explicitly out of scope" note, a vector database
+must not be added speculatively — only if a concrete retrieval-quality
+problem justifies it. The Phase 8 acceptance criteria only require
+retrieving obviously relevant context (e.g. "my favorite color is blue")
+that exact/keyword matching handles well. The `RetrievalPolicy` gates
+queries per mode (Actions mode never queries memory; short/empty queries
+are skipped), which keeps retrieval cheap and predictable.
+
+**If retrieval quality later proves insufficient** (e.g. recall of
+paraphrased memories), revisit this decision with a recorded benchmark
+before adding any embedding/vector-database dependency.
+
+---
+
+## ADR-013: Phase 9 GPU-aware model scheduler — ResourceMonitor abstraction and CPU-resident STT
+
+**Decision:** Phase 9 introduces a centralized `ResourceScheduler`
+(`app/core/resource_scheduler.py`) as the single authority for model
+lifecycle (load/unload) across the LLM, vision, and STT providers. It reads
+real resource data only through a `ResourceMonitor` abstraction
+(`app/core/resource_monitor.py`) that merges Ollama's `/api/ps` (per-model
+resident sizes) with an `nvidia-smi` subprocess readout (real GPU VRAM),
+returning a typed `ResourceSnapshot` so all scheduling logic is testable with
+mocked snapshots. Models are described by a provider-agnostic
+`ModelDescriptor` (model_id, capability, estimated VRAM/RAM, loaded,
+last_used, active_requests) registered in a `ModelRegistry`, mirroring the
+existing `ToolRegistry` pattern.
+
+The three schedulable models are:
+- `llm` — OllamaProvider (qwen2.5:3b), estimated ~2.3 GB VRAM
+- `vision` — VisionProvider (moondream), estimated ~1.5 GB VRAM
+- `stt` — STTProvider (faster-whisper tiny.en), **0 VRAM**
+
+faster-whisper runs on CPU (`device="cpu", compute_type="int8"`) per
+ADR-010, so it is treated as CPU-resident: `estimated_vram_mb = 0`, excluded
+from GPU VRAM accounting, but tracked via `estimated_ram_mb` and surfaced in
+`system.resource_update`. VRAM budgets are strictly enforced (ECO ~2.5 GB,
+BALANCED ~4.0 GB, PERFORMANCE ~4.5 GB, configurable via env vars). RAM
+budget enforcement exists but is **disabled by default**
+(`SPECTRA_ENABLE_RAM_BUDGET_ENFORCEMENT=false`), keeping Phase 9's primary
+responsibility GPU-aware without overcomplicating the phase.
+
+**Why:** the "no unnecessary background AI workloads" rule and the
+~4–4.5 GB VRAM budget in `MASTER_BLUEPRINT.md` require a single component
+that knows every model's residency and enforces the active profile. Providers
+stay inference-only; the scheduler owns residency. Using Ollama's `keep_alive`
+(`-1` to pin, `0` to release) lets the scheduler control model residency
+through the same HTTP API providers already use, with no new runtime
+dependency. `nvidia-smi` needs no Python package (subprocess call only) and
+matches the NVIDIA target hardware; both sources degrade gracefully to
+`None` so the app still works without an NVIDIA GPU.
+
+**Alternative considered:** `pynvml` for VRAM measurement (rejected: new
+dependency without justification), scheduler directly calling subprocess/HTTP
+(rejected: untestable and violates single responsibility), and CPU-STT counted
+against VRAM (rejected: it does not consume GPU memory).

@@ -26,7 +26,7 @@ app and not a generic admin dashboard. Concretely:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ SPECTRA · PHASE 0        Backend: Connected  VRAM  BALANCED│  ← StatusBar
+│ SPECTRA · PHASE 8        Backend: Connected  VRAM  BALANCED│  ← StatusBar
 ├─────────────────────────────────────────────────────────┤
 │                                                             │
 │                        ╭───────╮                           │
@@ -42,7 +42,6 @@ app and not a generic admin dashboard. Concretely:
 
   Activity panel slides in from the right (☰ toggle, top-right).
   Permission modal and toasts overlay on top when triggered.
-  Dev-only state simulator is pinned bottom-left, visually flagged.
 ```
 
 ## Components
@@ -70,52 +69,54 @@ the lowest intensity so the orb is calm at rest.
 ### `ModeDock.tsx`
 
 Horizontal capsule dock of the six modes (Talk, Vision, Screen, Files,
-Memory, Actions). Selecting a mode only changes local UI focus in
-Phase 0 — see the code comment in the component. The active mode gets an
-animated gradient highlight (`layoutId` shared-element transition via
-Framer Motion).
+Memory, Actions). Selecting a mode sets the backend routing target — the
+same text input is handled differently per mode (see `router.py`). The
+active mode gets an animated gradient highlight (`layoutId` shared-element
+transition via Framer Motion).
 
 ### `StatusBar.tsx`
 
-Top bar. Shows the brand mark, a `PHASE 0` badge, the backend connection
+Top bar. Shows the brand mark, a `PHASE 9` badge, the backend connection
 pill (`Backend: Connected` / `Backend: Disconnected` / `Backend:
-Connecting…`, driven by `useBackendConnection.ts`), a **VRAM
-placeholder** pill (static "—/4.5 GB" — there is no model running to
-measure in Phase 0), and the current power profile pill.
+Connecting…`, driven by `useBackendConnection.ts`), live **VRAM** and **RAM**
+pills fed by real `system.resource_update` numbers (Phase 9), and an
+interactive **power profile** pill. Clicking the profile pill cycles
+ECO → BALANCED → PERFORMANCE, sends a `profile.switch` WebSocket message,
+and the backend's `system.resource_update` reply is the single source of
+truth for the displayed profile (plus a short confirmation toast). Each
+profile has a subtle accent color (ECO green, BALANCED cyan, PERFORMANCE
+violet) with a smooth color transition on change.
 
 ### `CommandBar.tsx`
 
-Bottom input: microphone toggle, camera toggle, text input, send button.
-In Phase 0, submitting text or toggling mic/camera only logs to the
-activity panel and shows a toast — nothing reaches any AI system.
+Bottom input: attach-file, microphone toggle, camera toggle, screen
+capture indicator (Screen mode), text input, and send button.
+- The microphone toggle records via `MediaRecorder` (`lib/audioRecorder.ts`)
+  and uploads the audio to the backend over the WebSocket for local
+  speech-to-text (Phase 4).
+- The camera toggle captures a single frame via `getUserMedia` and attaches
+  it to the next submit (Phase 5). An active camera button serves as the
+  on-screen "camera is capturing" privacy indicator.
+- Screen mode auto-captures the current display via `getDisplayMedia` on
+  submit (Phase 8).
+- Files/images can be attached by browsing, pasting, or dragging.
 
 ### `ActivityPanel.tsx`
 
-Slide-in panel (right side) listing local UI events with timestamps.
-Phase 0 populates it from UI interactions only. From Phase 3 (task
-router) onward it should reflect real backend task-lifecycle events.
+Slide-in panel (right side) listing backend task-lifecycle events with
+timestamps: `task.started`, `task.completed`, `task.failed`, plus local UI
+events. Reflects real backend events since Phase 3.
 
 ### `PermissionModal.tsx`
 
-Shell for the future permission-confirmation flow (Phase 7). Takes a
-`PermissionRequest { title, description, riskLevel }` and renders an
-Allow/Deny dialog. Nothing in Phase 0 triggers this automatically; a
-small "⚠" button in the top bar opens a hard-coded example so the
-component can be visually reviewed.
+Renders a real `permission.requested` from the backend (Phase 7) as an
+Allow/Deny dialog with a risk badge. Replies are sent as
+`permission.response`; a denied or timed-out request never executes.
 
 ### `ToastStack.tsx`
 
 Bottom-center toast notifications (`info` / `success` / `warning` /
 `error`), auto-dismiss after 4s or manually dismissible.
-
-### `DevStateSimulator.tsx` — development only
-
-**Not connected to any real AI system.** Lets a developer click through
-all 9 orb states to visually inspect animations. See the large comment
-block at the top of the file for exact removal instructions when Phase 2
-implements the real backend-driven state system. It also hard-disables
-itself in production builds (`import.meta.env.PROD` check) as a safety
-net.
 
 ## Orb states
 

@@ -29,19 +29,19 @@ to update this document with a recorded justification (and note it in
 
 ## State and events
 
-6. **Backend agent state will eventually become the source of truth.**
-   From Phase 2 onward, do not let the frontend invent or infer agent
-   state locally — it must render what the backend's events say. Phase 0
-   is the sole, explicitly-marked exception (see rule 8).
-7. **Frontend animations must eventually react to backend events**, not
-   to arbitrary local timers or fake progress. Once Phase 2 lands, an
-   animation with no backing event is a bug.
+6. **Backend agent state is the source of truth.** Since Phase 2, the
+   frontend must not invent or infer agent state locally — it must render
+   what the backend's events say (see `ARCHITECTURE.md`).
+7. **Frontend animations must react to backend events**, not to arbitrary
+   local timers or fake progress. An animation with no backing event is a
+   bug.
 8. **Development-only state simulation must not leak into production
-   logic.** `DevStateSimulator.tsx` (Phase 0) is the reference example:
-   clearly commented as dev-only, disabled via `import.meta.env.PROD`,
-   and designed for clean, total removal in Phase 2. Any future dev-only
-   scaffolding must follow the same pattern: labeled, self-disabling in
-   production, and removable as a single, well-contained change.
+   logic.** The Phase 0 `DevStateSimulator.tsx` (removed in Phase 2) was
+   the reference example: clearly commented as dev-only, disabled via
+   `import.meta.env.PROD`, and designed for clean, total removal. Any
+   future dev-only scaffolding must follow the same pattern: labeled,
+   self-disabling in production, and removable as a single,
+   well-contained change.
 
 ## Safety and permissions
 

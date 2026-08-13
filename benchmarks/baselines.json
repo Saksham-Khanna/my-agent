@@ -1,0 +1,34 @@
+{
+  "description": "Spectra Phase 10 Baseline Metrics for Hardware Posture (RTX 4050 / Ryzen 7 / 16GB RAM)",
+  "profile": "BALANCED",
+  "targets": {
+    "health_p50_max_ms": 15.0,
+    "health_p95_max_ms": 35.0,
+    "ws_handshake_max_ms": 50.0,
+    "cold_start_first_token_max_ms": 3000.0,
+    "warm_start_first_token_max_ms": 800.0,
+    "min_tokens_per_second": 15.0,
+    "max_idle_vram_mb": 4096.0,
+    "max_idle_ram_mb": 10240.0
+  },
+  "baselines": {
+    "health_latency": {
+      "p50_ms": 4.2,
+      "p95_ms": 12.5,
+      "p99_ms": 18.1
+    },
+    "ws_handshake": {
+      "avg_handshake_ms": 14.3
+    },
+    "llm_streaming": {
+      "cold_start_first_token_ms": 1240.0,
+      "warm_start_first_token_ms": 380.0,
+      "tokens_per_second": 28.5
+    },
+    "resources": {
+      "vram_used_mb": 2300.0,
+      "ram_used_mb": 1450.0,
+      "cpu_percent": 3.2
+    }
+  }
+}
