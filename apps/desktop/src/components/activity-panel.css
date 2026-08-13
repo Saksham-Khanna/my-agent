@@ -52,18 +52,46 @@
 .activity-panel__list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: var(--space-2) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  position: relative;
+}
+
+.activity-panel__list::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 7px;
+  width: 1px;
+  background: var(--border-subtle);
 }
 
 .activity-panel__item {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  padding-left: 22px;
+  padding-bottom: var(--space-3);
+}
+
+.activity-panel__marker {
+  position: absolute;
+  left: 3px;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg-panel-raised);
+  border: 2px solid var(--accent-cyan);
+  z-index: 1;
+}
+
+.activity-panel__content {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .activity-panel__time {
@@ -75,4 +103,5 @@
 .activity-panel__label {
   font-size: 13px;
   color: var(--text-primary);
+  word-break: break-word;
 }

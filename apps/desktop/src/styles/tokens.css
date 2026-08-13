@@ -92,14 +92,28 @@ button {
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  inset: -20%;
   pointer-events: none;
   background: radial-gradient(
     ellipse at 50% 38%,
-    rgba(124, 108, 255, 0.06),
-    transparent 60%
+    rgba(124, 108, 255, 0.12),
+    rgba(76, 224, 210, 0.04) 40%,
+    transparent 70%
   );
   z-index: 0;
+  animation: ambient-drift 20s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-2%, 2%) scale(1.05);
+  }
+  100% {
+    transform: translate(2%, -1%) scale(0.98);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

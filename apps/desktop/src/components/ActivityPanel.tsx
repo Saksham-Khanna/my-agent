@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import "./activity-panel.css";
 
@@ -14,17 +15,38 @@ interface ActivityPanelProps {
 }
 
 /**
- * Phase 0 activity log. Entries are populated locally from UI
- * interactions (mode changes, command submissions, simulator changes) —
- * there is no task execution yet. From Phase 3 (task router) onward this
- * should reflect real task lifecycle events from the backend.
+ * Activity log. Entries reflect backend task lifecycle events
+ * (task.started / task.completed / task.failed) plus local UI events.
+ *
+ * Accessible: Escape key closes the panel; role="log" signals its purpose.
  */
 export function ActivityPanel({ open, entries, onClose }: ActivityPanelProps) {
+  const panelRef = useRef<HTMLElement>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) {
+        onClose();
+      }
+    },
+    [open, onClose]
+  );
+
+  useEffect(() => {
+    if (open) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [open, handleKeyDown]);
+
   return (
     <AnimatePresence>
       {open && (
         <motion.aside
+          ref={panelRef}
           className="activity-panel"
+          role="log"
+          aria-label="Activity log"
           initial={{ x: 320, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 320, opacity: 0 }}
@@ -49,8 +71,11 @@ export function ActivityPanel({ open, entries, onClose }: ActivityPanelProps) {
               <ul className="activity-panel__list">
                 {entries.map((entry) => (
                   <li key={entry.id} className="activity-panel__item">
-                    <span className="activity-panel__time">{entry.timestamp}</span>
-                    <span className="activity-panel__label">{entry.label}</span>
+                    <span className="activity-panel__marker" aria-hidden="true" />
+                    <div className="activity-panel__content">
+                      <span className="activity-panel__time">{entry.timestamp}</span>
+                      <span className="activity-panel__label">{entry.label}</span>
+                    </div>
                   </li>
                 ))}
               </ul>

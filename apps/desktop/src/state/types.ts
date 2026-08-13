@@ -1,6 +1,6 @@
 /**
- * The six future task modes. Phase 0 renders these as inert UI only —
- * selecting one does not trigger any capability yet.
+ * The six task modes. Each maps to a backend handler that routes
+ * input through the task router.
  */
 export type AgentMode =
   | "talk"
@@ -28,6 +28,44 @@ export const AGENT_MODES: AgentModeMeta[] = [
 export type BackendConnectionStatus = "connected" | "disconnected" | "connecting";
 
 export type PowerProfile = "ECO" | "BALANCED" | "PERFORMANCE";
+
+export const POWER_PROFILES: PowerProfile[] = ["ECO", "BALANCED", "PERFORMANCE"];
+
+export interface ResourceModel {
+  model_id: string;
+  display_name: string;
+  provider: string;
+  capability: "llm" | "vision" | "stt";
+  loaded: boolean;
+  estimated_vram_mb: number;
+  estimated_ram_mb: number;
+  last_used: string;
+  active_requests: number;
+}
+
+export interface SystemResourceUpdate {
+  profile: PowerProfile;
+  vram_used_mb: number;
+  vram_budget_mb: number;
+  ram_used_mb: number;
+  ram_budget_mb: number;
+  models: ResourceModel[];
+}
+
+export type AttachmentStorage = "inline" | "path" | "url";
+
+export interface Attachment {
+  id: string;
+  mime_type: string;
+  storage?: AttachmentStorage;
+  name?: string;
+  data_b64?: string;
+  content?: string;
+  path?: string;
+  url?: string;
+  size_bytes?: number;
+  metadata?: { dataUrl?: string };
+}
 
 export interface ToastMessage {
   id: string;

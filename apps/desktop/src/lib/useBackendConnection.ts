@@ -6,12 +6,11 @@ const RECONNECT_DELAY_MS = 2000;
 const HEARTBEAT_INTERVAL_MS = 15000;
 
 /**
- * Owns the single WebSocket connection to the Phase 0 backend.
+ * Owns the single WebSocket connection to the Spectra backend.
  *
- * Phase 0 responsibility: report connected/disconnected status and keep
- * the connection alive with a ping/pong heartbeat. It intentionally does
- * not interpret any message payload beyond "connection_status" / "pong" —
- * real event handling arrives in Phase 2 (see docs/EVENT_PROTOCOL.md).
+ * Responsibilities: report connected/disconnected/connecting status,
+ * auto-reconnect on drop, and keep the connection alive via ping/pong
+ * heartbeat. Message interpretation is handled by the listener in App.tsx.
  */
 export interface BackendConnection {
   status: BackendConnectionStatus;

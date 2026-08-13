@@ -8,9 +8,9 @@ interface ToastStackProps {
 }
 
 /**
- * Error/notification toast shell. Nothing in Phase 0 produces real
- * errors — toasts here are only triggered by local UI interactions
- * (e.g. the dev state simulator) to prove the component works.
+ * Notification toasts. Triggered by real events (task failures,
+ * transcription errors, permission denials, memory updates) and local
+ * UI interactions.
  */
 export function ToastStack({ toasts, onDismiss }: ToastStackProps) {
   return (

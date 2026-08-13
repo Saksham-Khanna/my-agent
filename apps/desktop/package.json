@@ -1,9 +1,9 @@
 {
   "name": "spectra-desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Spectra desktop shell — Phase 0 foundation (UI shell + dev-only orb state simulator).",
+  "description": "Spectra desktop shell — local-first desktop AI agent.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

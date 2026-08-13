@@ -6,20 +6,40 @@
   z-index: 1;
 }
 
+/* ---- Main area: orb centred, response panel below it, mode dock at bottom ---- */
 .app-shell__main {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-6);
-  padding: var(--space-6);
+  justify-items: center;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  overflow: hidden;
+  min-height: 0;
 }
 
+/* Orb lives in the top grid cell, centred */
+.app-shell__orb-region {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Scrollable response output below the orb */
+.app-shell__response-region {
+  width: 100%;
+  max-width: 640px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---- Footer: command bar ---- */
 .app-shell__footer {
-  padding: var(--space-4) var(--space-6) var(--space-6);
+  padding: var(--space-3) var(--space-6) var(--space-5);
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .app-shell__footer-inner {
@@ -27,6 +47,7 @@
   max-width: 640px;
 }
 
+/* ---- Floating utility buttons ---- */
 .app-shell__activity-toggle {
   position: fixed;
   top: var(--space-4);
@@ -41,8 +62,59 @@
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
 .app-shell__activity-toggle:hover {
   color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+/* ---- Response panel ---- */
+.response-panel {
+  width: 100%;
+  max-height: 26vh;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  animation: response-panel-fadein 0.3s var(--ease-standard);
+  scroll-behavior: smooth;
+}
+
+.response-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.response-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.response-panel::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+
+@keyframes response-panel-fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Mode Dock spacer ---- */
+.app-shell__mode-dock-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) 0 0;
 }
