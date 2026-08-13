@@ -1,18 +1,21 @@
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 from fastapi.testclient import TestClient
 from app.main import app
+from app.routes.ws import resource_scheduler
 
 @pytest.fixture
 def mock_provider():
     async def mock_generate_stream(prompt):
         yield "Hello"
         yield " there"
-    
-    with patch("app.core.handlers.OllamaProvider") as MockProviderClass:
-        provider_instance = MockProviderClass.return_value
-        provider_instance.generate_stream = mock_generate_stream
-        yield provider_instance
+
+    entry = resource_scheduler.registry.get("llm")
+    provider_instance = entry[1]
+    provider_instance.load = AsyncMock()
+    provider_instance.unload = AsyncMock()
+    provider_instance.generate_stream = mock_generate_stream
+    return provider_instance
 
 def test_websocket_chat_message(mock_provider):
     client = TestClient(app)

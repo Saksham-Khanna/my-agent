@@ -10,7 +10,7 @@ def test_health_returns_ok():
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
-    assert body["phase"] == "0-foundation"
+    assert body["phase"] == "10-polish"
 
 
 def test_root_lists_endpoints():
