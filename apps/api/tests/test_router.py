@@ -1,5 +1,4 @@
 ﻿import pytest
-import asyncio
 from app.core.models import TaskContext
 from app.core.router import TaskRouter
 from app.core.state import OrbStateMachine, OrbState, OrbStateEvent
@@ -95,8 +94,6 @@ async def test_router_no_memory_injection_in_actions():
 @pytest.mark.anyio
 async def test_router_screen_handler_replaces_stub():
     from app.core.router import TaskRouter
-    from app.core.models import TaskContext
-    from app.core.state import OrbStateMachine, OrbState
 
     router = TaskRouter()
     handler = router.handlers.get("screen")
@@ -107,8 +104,6 @@ async def test_router_screen_handler_replaces_stub():
 @pytest.mark.anyio
 async def test_router_memory_handler_replaces_stub():
     from app.core.router import TaskRouter
-    from app.core.models import TaskContext
-    from app.core.state import OrbStateMachine, OrbState
 
     router = TaskRouter()
     handler = router.handlers.get("memory")

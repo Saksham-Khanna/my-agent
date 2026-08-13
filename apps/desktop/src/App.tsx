@@ -14,7 +14,7 @@ const DevStateSimulator = import.meta.env.VITE_ENABLE_DEV_SIMULATOR === "true"
 import { ToastStack } from "@/components/ToastStack";
 import { useBackendConnection } from "@/lib/useBackendConnection";
 import type { OrbState } from "@/state/orbState";
-import type { AgentMode, ToastMessage, Attachment, PowerProfile, SystemResourceUpdate } from "@/state/types";
+import type { AgentMode, ToastMessage, Attachment, PowerProfile, SystemResourceUpdate, BackendConnectionStatus } from "@/state/types";
 import { AudioRecorder } from "@/lib/audioRecorder";
 import "./App.css";
 

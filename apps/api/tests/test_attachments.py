@@ -1,5 +1,4 @@
 import pytest
-from dataclasses import FrozenInstanceError
 from app.core.models import Attachment, AttachmentStorage
 from app.core.attachments import (
     filter_attachments_by_mime_prefix,

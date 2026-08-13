@@ -1,6 +1,6 @@
 import asyncio
 import uuid
-from typing import Dict, Optional, Tuple
+from typing import Dict, Tuple
 
 
 class PermissionManager:

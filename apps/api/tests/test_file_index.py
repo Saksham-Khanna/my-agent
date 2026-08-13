@@ -1,5 +1,4 @@
 import pytest
-import asyncio
 from pathlib import Path
 from app.services.file_index import FileIndex
 from app.services.indexer import FileIndexer

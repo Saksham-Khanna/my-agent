@@ -1,5 +1,7 @@
 # Spectra — Local Desktop AI Agent
 
+[![CI](https://github.com/Saksham-Khanna/my-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Saksham-Khanna/my-agent/actions/workflows/ci.yml)
+
 A local-first, multimodal desktop AI agent. **This repository currently reflects the completion of Phases 0 through 9**, establishing the foundation, local LLM integration, backend Orb state machine, task routing, voice, vision, screen understanding, file intelligence, tool execution with permissions, long-term memory, and a GPU-aware model scheduler.
 
 Read `docs/MASTER_BLUEPRINT.md` for the full project vision and `docs/DEVELOPMENT_PHASES.md` for the complete roadmap.

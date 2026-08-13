@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional
 from app.services.file_index import FileIndex
 
 logger = logging.getLogger(__name__)

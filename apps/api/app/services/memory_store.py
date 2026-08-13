@@ -2,7 +2,7 @@
 
 import json
 import logging
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 import uuid

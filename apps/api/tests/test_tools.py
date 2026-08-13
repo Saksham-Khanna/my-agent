@@ -1,14 +1,12 @@
 import pytest
-import asyncio
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from app.tools.base import ToolDefinition, ToolResult
 from app.tools.registry import ToolRegistry
 from app.tools.system_tools import ShellCommandTool, CreateFileTool, SystemInfoTool
 from app.core.permissions import PermissionManager
 from app.core.models import TaskContext
-from app.core.state import OrbStateMachine, OrbState
+from app.core.state import OrbStateMachine
 from app.core.handlers import ActionsHandler
 
 

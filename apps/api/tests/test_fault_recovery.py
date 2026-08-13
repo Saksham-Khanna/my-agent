@@ -9,14 +9,12 @@ Verifies system resilience under error conditions:
 """
 
 import asyncio
-from unittest.mock import AsyncMock, patch
 
 import pytest
 from app.core.models import TaskContext
 from app.core.router import TaskRouter
 from app.core.state import OrbState, OrbStateMachine
 from app.core.resource_scheduler import ResourceScheduler, ModelDescriptor, ModelRegistry
-from app.routes.ws import process_task
 
 
 class FailingProvider:
@@ -62,7 +60,7 @@ async def test_model_load_failure_recovery():
     state_machine = OrbStateMachine(initial_state=OrbState.IDLE)
 
     with pytest.raises(RuntimeError, match="GPU OOM"):
-        async with scheduler.acquire("failing_model") as provider:
+        async with scheduler.acquire("failing_model"):
             pass
 
     assert not failing_descriptor.loaded
@@ -109,7 +107,6 @@ async def test_task_cancellation_cleanup():
     registry.register(descriptor, provider)
 
     scheduler = ResourceScheduler(registry=registry)
-    state_machine = OrbStateMachine(initial_state=OrbState.IDLE)
 
     async def long_running_task():
         async with scheduler.acquire("llm"):

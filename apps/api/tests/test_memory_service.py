@@ -1,5 +1,5 @@
 ﻿import pytest
-from app.services.memory_store import MemoryStore, MemoryEntry
+from app.services.memory_store import MemoryStore
 from app.services.memory_service import MemoryService
 
 

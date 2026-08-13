@@ -138,7 +138,7 @@ class SystemInfoTool(BaseTool):
                 "python_version": sys.version.split()[0],
                 "cpu_count": os.cpu_count() or 1,
             }
-            output = f"System Info:\n" + "\n".join(f"  {k}: {v}" for k, v in info.items())
+            output = "System Info:\n" + "\n".join(f"  {k}: {v}" for k, v in info.items())
             return ToolResult(
                 success=True,
                 output=output,
